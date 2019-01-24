@@ -122,6 +122,20 @@ class CheckRaid < Sensu::Plugin::Check::CLI
     end
   end
 
+  # Check MegaSAS
+  #
+  def check_mega_sas
+    return unless File.exist?('/opt/MegaCli/storcli/storcli64')
+    failed = contents.lines.grep(/(Pdgd|OfLn)\s+\: 0/)
+    degraded = contents.lines.grep(/Dgrd\s+\: 0/)
+    # #YELLOW
+    if failed.empty? || degraded.empty?
+      warning 'MegaSAS RAID warning'
+    else
+      ok 'MegaSAS RAID OK'
+    end
+  end
+
   # Main function
   #
   def run
